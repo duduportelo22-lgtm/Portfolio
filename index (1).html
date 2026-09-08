@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalel Dev — Roblox Programmer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b0d;
+  --bg-2:#101114;
+  --panel:#16181c;
+  --panel-2:#1c1f24;
+  --border:#2a2d33;
+  --text:#eef0f3;
+  --text-dim:#9298a3;
+  --silver:#d8dce3;
+  --silver-dim:#8b909c;
+  --silver-deep:#4d525c;
+  --radius:12px;
+  --maxw:1240px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;
+  line-height:1.6;overflow-x:hidden;position:relative;
+}
+h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;}
+a{color:inherit;text-decoration:none;}
+img,video{max-width:100%;display:block;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px;}
+section{padding:150px 0;position:relative;}
+@media(max-width:720px){section{padding:90px 0;} .wrap{padding:0 20px;}}
+
+#particleField{position:fixed;inset:0;z-index:-2;opacity:.5;}
+.spotlight{
+  position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(500px circle at var(--x,50%) var(--y,20%), rgba(216,220,227,0.06), transparent 60%);
+}
+
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease, transform .7s ease;}
+.reveal.in-view{opacity:1;transform:translateY(0);}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none;}}
+
+/* nav */
+header{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(12px);background:rgba(10,11,13,0.7);border-bottom:1px solid var(--border);}
+.navrow{display:flex;align-items:center;justify-content:space-between;height:80px;}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:18px;letter-spacing:0.2px;}
+.brand-mark{
+  width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(155deg,var(--silver),var(--silver-deep));
+  display:flex;align-items:center;justify-content:center;
+  color:#0a0b0d;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;
+}
+nav ul{list-style:none;display:flex;gap:38px;}
+nav a{font-size:14.5px;color:var(--text-dim);transition:color .2s;}
+nav a:hover{color:var(--silver);}
+.nav-cta{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;padding:10px 18px;font-size:14px;color:var(--text);transition:border-color .2s,color .2s;}
+.nav-cta:hover{border-color:var(--silver);color:var(--silver);}
+.menu-btn{display:none;background:none;border:1px solid var(--border);border-radius:7px;width:42px;height:42px;color:var(--text);}
+@media(max-width:900px){
+  nav ul{display:none;} .nav-cta{display:none;} .menu-btn{display:block;}
+  .mobile-menu{position:fixed;top:80px;left:0;right:0;background:var(--panel);border-bottom:1px solid var(--border);padding:18px 22px;display:none;flex-direction:column;gap:16px;z-index:99;}
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{font-size:15px;color:var(--text-dim);}
+}
+
+/* hero */
+.hero{padding:220px 0 140px;min-height:100vh;display:flex;align-items:center;}
+.eyebrow-tag{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:100px;padding:7px 16px;font-size:13px;color:var(--text-dim);margin-bottom:30px;}
+.eyebrow-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--silver);box-shadow:0 0 0 4px rgba(216,220,227,0.12);}
+.hero h1{
+  font-size:clamp(52px,9vw,120px);font-weight:700;line-height:0.98;letter-spacing:-2px;
+  background:linear-gradient(100deg,#fdfdfe 10%,var(--silver-deep) 35%,var(--silver) 55%,#fdfdfe 75%);
+  background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:sheen 7s linear infinite;margin-bottom:26px;
+}
+@keyframes sheen{to{background-position:-250% center;}}
+@media(prefers-reduced-motion:reduce){.hero h1{animation:none;}}
+.hero .role{font-size:clamp(18px,2.2vw,24px);color:var(--silver-dim);font-weight:500;margin-bottom:24px;}
+.hero p.lede{font-size:17.5px;color:var(--text-dim);max-width:560px;margin-bottom:40px;}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:70px;}
+.btn{padding:15px 28px;border-radius:9px;font-size:14.5px;font-weight:500;display:inline-flex;align-items:center;gap:10px;transition:transform .15s, filter .2s, border-color .2s;}
+.btn-primary{background:linear-gradient(155deg,#f2f3f5,var(--silver-deep));color:#0a0b0d;}
+.btn-primary:hover{transform:translateY(-3px);filter:brightness(1.08);}
+.btn-outline{border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{border-color:var(--silver);transform:translateY(-3px);}
+.hero-badges{display:flex;gap:32px;flex-wrap:wrap;}
+.hero-badges div .num{font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:700;color:var(--silver);line-height:1;}
+.hero-badges div .cap{font-size:13px;color:var(--text-dim);margin-top:6px;}
+
+/* marquee */
+.marquee{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--panel);overflow:hidden;padding:22px 0;}
+.marquee-track{display:flex;gap:48px;width:max-content;animation:scroll 26s linear infinite;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@media(prefers-reduced-motion:reduce){.marquee-track{animation:none;}}
+.marquee-track span{display:flex;align-items:center;gap:16px;font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--text-dim);white-space:nowrap;}
+.marquee-track span i{width:6px;height:6px;background:var(--silver-deep);border-radius:1px;display:inline-block;}
+
+/* section heads */
+.sec-head{max-width:660px;margin-bottom:60px;}
+.sec-head .kicker{font-size:13px;color:var(--silver-dim);margin-bottom:12px;}
+.sec-head h2{font-size:clamp(30px,4vw,46px);font-weight:600;letter-spacing:-0.5px;margin-bottom:16px;}
+.sec-head p{color:var(--text-dim);font-size:16.5px;}
+
+/* about */
+#about{background:var(--bg-2);}
+.about-grid{display:grid;grid-template-columns:0.85fr 1.15fr;gap:64px;align-items:start;}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr;}}
+.about-photo{aspect-ratio:4/5;border-radius:var(--radius);border:1px solid var(--border);background:linear-gradient(160deg,#1c1f24,#0a0b0d);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:14px;text-align:center;padding:24px;}
+.about-text p{color:var(--text-dim);font-size:16.5px;margin-bottom:20px;max-width:600px;}
+.about-text p strong{color:var(--text);font-weight:600;}
+.counters{display:flex;gap:48px;margin-top:36px;flex-wrap:wrap;}
+.counter .num{font-family:'Space Grotesk',sans-serif;font-size:40px;font-weight:700;color:var(--silver);}
+.counter .cap{font-size:13px;color:var(--text-dim);margin-top:6px;}
+
+/* skills */
+.skills-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+@media(max-width:900px){.skills-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.skills-grid{grid-template-columns:1fr;}}
+.skill-group{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:26px;transition:border-color .25s, transform .25s;}
+.skill-group:hover{border-color:var(--silver-deep);transform:translateY(-5px);}
+.skill-group .group-title{font-size:13px;color:var(--silver-dim);margin-bottom:16px;}
+.skill-group ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.skill-group li{font-size:14.5px;color:var(--text);display:flex;align-items:center;gap:10px;}
+.skill-group li::before{content:"";width:5px;height:5px;background:var(--silver);border-radius:1px;flex:0 0 auto;}
+
+/* process */
+#process{background:var(--bg-2);}
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+@media(max-width:900px){.process-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.process-grid{grid-template-columns:1fr;}}
+.process-card{border-top:1px solid var(--border);padding-top:20px;}
+.process-card .step-num{font-family:'Space Grotesk',sans-serif;font-size:15px;color:var(--silver-deep);margin-bottom:14px;}
+.process-card h3{font-size:19px;font-weight:600;margin-bottom:10px;}
+.process-card p{font-size:14.5px;color:var(--text-dim);}
+
+/* media carousel */
+#media{border-top:1px solid var(--border);}
+.carousel-wrap{position:relative;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);}
+.carousel-track{display:flex;gap:24px;width:max-content;animation:mediaScroll 50s linear infinite;}
+.carousel-wrap:hover .carousel-track{animation-play-state:paused;}
+@keyframes mediaScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@media(prefers-reduced-motion:reduce){.carousel-track{animation:none;overflow-x:auto;}}
+.media-card{flex:0 0 auto;width:300px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .2s, transform .2s;}
+.media-card:hover{border-color:var(--silver);transform:translateY(-4px);}
+.media-visual{aspect-ratio:9/16;background:linear-gradient(160deg,#20242a,#0a0b0d);display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:13px;text-align:center;padding:20px;position:relative;overflow:hidden;}
+.media-visual img,.media-visual video{width:100%;height:100%;object-fit:cover;}
+.media-caption{padding:16px 18px;}
+.media-caption .m-title{font-size:14.5px;font-weight:500;}
+.media-caption .m-sub{font-size:12.5px;color:var(--text-dim);margin-top:4px;}
+
+/* contact */
+#contact{background:var(--panel);border-top:1px solid var(--border);}
+.contact-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;}
+@media(max-width:860px){.contact-grid{grid-template-columns:1fr;}}
+.contact-card{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:32px;}
+.contact-row{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--border);gap:14px;}
+.contact-row:last-child{border-bottom:none;}
+.contact-row .label{font-size:13px;color:var(--text-dim);margin-bottom:4px;}
+.contact-row .value{font-size:15px;font-weight:500;word-break:break-all;}
+.copy-btn{border:1px solid var(--border);border-radius:7px;padding:9px 15px;font-size:13px;color:var(--text-dim);transition:border-color .2s,color .2s;white-space:nowrap;}
+.copy-btn:hover{border-color:var(--silver);color:var(--silver);}
+
+footer{padding:44px 0;border-top:1px solid var(--border);}
+footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+footer p{font-size:13px;color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<canvas id="particleField"></canvas>
+<div class="spotlight" id="spotlight"></div>
+
+<header>
+  <div class="wrap navrow">
+    <div class="brand"><span class="brand-mark">KD</span>Kalel Dev</div>
+    <nav><ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="#media">Showcase</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul></nav>
+    <a class="nav-cta" href="#contact">Get in touch</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#process">Process</a>
+    <a href="#media">Showcase</a>
+    <a href="#contact">Contact</a>
+  </div>
+</header>
+
+<section id="home" class="hero">
+  <div class="wrap">
+    <div class="eyebrow-tag reveal"><span class="dot"></span>Available for freelance & team projects</div>
+    <h1 class="reveal">Kalel Dev</h1>
+    <div class="role reveal">Roblox Programmer &amp; Unity Developer</div>
+    <p class="lede reveal">I build scalable, high-performance Roblox experiences using the Knit framework, with a background in Unity development. Systems that hold up under real players, not just in Studio.</p>
+    <div class="hero-actions reveal">
+      <a class="btn btn-primary" href="#media">See my work</a>
+      <a class="btn btn-outline" href="#contact">Contact me</a>
+    </div>
+    <div class="hero-badges reveal">
+      <div><div class="num">50M+</div><div class="cap">Roblox visits contributed</div></div>
+      <div><div class="num">2</div><div class="cap">Engines — Roblox &amp; Unity</div></div>
+      <div><div class="num">Knit</div><div class="cap">Framework of choice</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<section id="about">
+  <div class="wrap about-grid">
+    <div class="about-photo reveal">Add your photo here<br>(recommended 800×1000)</div>
+    <div class="about-text">
+      <div class="sec-head reveal" style="margin-bottom:24px;">
+        <div class="kicker">About me</div>
+        <h2>Hi, I'm Kalel.</h2>
+      </div>
+      <p class="reveal">I'm a <strong>Roblox programmer</strong> focused on building gameplay systems that are clean, scalable and fun to play. I work primarily with <strong>Luau</strong> and the <strong>Knit framework</strong> for service-based architecture, and I also build in <strong>Unity</strong> when a project calls for it.</p>
+      <p class="reveal">My experience spans core gameplay mechanics, ability and combat systems, UI/UX implementation and backend data systems — always with an eye on performance and player retention.</p>
+      <p class="reveal">Replace this paragraph with your own story: how you got started, the kind of projects you enjoy most, and what you're looking for next.</p>
+      <div class="counters reveal">
+        <div class="counter"><div class="num" data-count="50" data-suffix="M+">0</div><div class="cap">Roblox visits</div></div>
+        <div class="counter"><div class="num" data-count="2" data-suffix="">0</div><div class="cap">Engines</div></div>
+        <div class="counter"><div class="num" data-count="1" data-suffix="">0</div><div class="cap">Framework of choice — Knit</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Toolkit</div>
+      <h2>Skills &amp; technologies</h2>
+      <p>The tools and systems I use to take a project from prototype to a live, scalable Roblox experience.</p>
+    </div>
+    <div class="skills-grid" id="skillsGrid"></div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">How I work</div>
+      <h2>From idea to shipped feature</h2>
+      <p>A straightforward process that keeps projects moving and communication clear.</p>
+    </div>
+    <div class="process-grid" id="processGrid"></div>
+  </div>
+</section>
+
+<section id="media">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="kicker">Showcase</div>
+      <h2>Recent work in motion</h2>
+      <p>Short clips and screenshots from projects I've built or contributed to.</p>
+    </div>
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="mediaTrack"></div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div class="reveal">
+      <div class="sec-head" style="margin-bottom:0;">
+        <div class="kicker">Let's talk</div>
+        <h2>Have a project in mind?</h2>
+        <p>I'm open to freelance work, team positions and collaborations on Roblox experiences. The fastest way to reach me is Discord.</p>
+      </div>
+    </div>
+    <div class="contact-card reveal">
+      <div class="contact-row">
+        <div>
+          <div class="label">Discord</div>
+          <div class="value">1479437155691397315</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="copy-btn" id="copyDiscord">Copy ID</button>
+          <a class="copy-btn" href="https://discord.com/users/1479437155691397315" target="_blank" rel="noopener">Open</a>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div>
+          <div class="label">Roblox profile</div>
+          <div class="value">roblox.com/users/11122671366</div>
+        </div>
+        <a class="copy-btn" href="https://www.roblox.com/users/11122671366/profile" target="_blank" rel="noopener">Open</a>
+      </div>
+      <div class="contact-row">
+        <div>
+          <div class="label">Email</div>
+          <div class="value">you@example.com</div>
+        </div>
+        <a class="copy-btn" href="mailto:you@example.com">Send</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>© <span id="year"></span> Kalel Dev. Built for Roblox.</p>
+    <p>Portfolio template — edit freely.</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+
+document.getElementById('menuBtn').addEventListener('click', function(){
+  document.getElementById('mobileMenu').classList.toggle('open');
+});
+document.querySelectorAll('.mobile-menu a').forEach(function(link){
+  link.addEventListener('click', function(){
+    document.getElementById('mobileMenu').classList.remove('open');
+  });
+});
+
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if(!reduceMotion){
+  window.addEventListener('mousemove', function(e){
+    document.documentElement.style.setProperty('--x', e.clientX + 'px');
+    document.documentElement.style.setProperty('--y', e.clientY + 'px');
+  });
+}
+
+const canvas = document.getElementById('particleField');
+const ctx = canvas.getContext('2d');
+let particles = [];
+function sizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = document.body.scrollHeight;
+}
+function makeParticles(){
+  const count = Math.floor((canvas.width * canvas.height) / 90000);
+  particles = [];
+  for(let i=0;i<count;i++){
+    particles.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height,
+      r: Math.random()*1.4 + 0.4,
+      vx: (Math.random()-0.5)*0.15,
+      vy: (Math.random()-0.5)*0.15
+    });
+  }
+}
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = 'rgba(216,220,227,0.5)';
+  particles.forEach(function(p){
+    if(!reduceMotion){
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0) p.x = canvas.width; if(p.x>canvas.width) p.x = 0;
+      if(p.y<0) p.y = canvas.height; if(p.y>canvas.height) p.y = 0;
+    }
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+  if(!reduceMotion){ requestAnimationFrame(drawParticles); }
+}
+sizeCanvas();
+makeParticles();
+drawParticles();
+window.addEventListener('resize', function(){ sizeCanvas(); makeParticles(); });
+
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){ entry.target.classList.add('in-view'); }
+  });
+}, {threshold:0.15});
+revealEls.forEach(function(el){ revealObserver.observe(el); });
+
+const counters = document.querySelectorAll('.counter .num');
+const counterObserver = new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
+    if(entry.isIntersecting){
+      const el = entry.target;
+      const target = parseInt(el.getAttribute('data-count'), 10);
+      const suffix = el.getAttribute('data-suffix') || '';
+      let current = 0;
+      const step = Math.max(1, Math.ceil(target / 40));
+      const tick = setInterval(function(){
+        current += step;
+        if(current >= target){ current = target; clearInterval(tick); }
+        el.textContent = current + suffix;
+      }, 30);
+      counterObserver.unobserve(el);
+    }
+  });
+}, {threshold:0.4});
+counters.forEach(function(el){ counterObserver.observe(el); });
+
+const TICKER_ITEMS = ["Roblox Programmer","Knit Framework","Unity Developer","Luau","Gameplay Systems","50M+ Visits"];
+const marqueeTrack = document.getElementById('marqueeTrack');
+for(let r=0;r<2;r++){
+  TICKER_ITEMS.forEach(function(item){
+    const span = document.createElement('span');
+    span.innerHTML = '<i></i>' + item;
+    marqueeTrack.appendChild(span);
+  });
+}
+
+const SKILLS = [
+  { group: "Scripting", items: ["Luau", "Lua", "C# (Unity)"] },
+  { group: "Frameworks", items: ["Knit Framework", "Rojo workflow"] },
+  { group: "Systems", items: ["Gameplay systems", "Ability & combat systems", "Data / DataStore handling"] },
+  { group: "Tools", items: ["Roblox Studio", "Unity Editor", "Git"] }
+];
+const skillsGrid = document.getElementById('skillsGrid');
+SKILLS.forEach(function(group, i){
+  const el = document.createElement('div');
+  el.className = 'skill-group reveal';
+  el.style.transitionDelay = (i*0.06) + 's';
+  el.innerHTML = '<div class="group-title">' + group.group + '</div><ul>' +
+    group.items.map(function(item){return '<li>' + item + '</li>';}).join('') + '</ul>';
+  skillsGrid.appendChild(el);
+  revealObserver.observe(el);
+});
+
+const PROCESS = [
+  { title: "Discover", text: "Understand the game vision, scope and technical requirements before writing a line of code." },
+  { title: "Prototype", text: "Build a fast, testable version of the system to validate the core loop early." },
+  { title: "Build", text: "Implement clean, modular systems with Knit — organized, documented and easy to extend." },
+  { title: "Ship & Support", text: "Deploy, monitor live performance, and keep iterating based on real player data." }
+];
+const processGrid = document.getElementById('processGrid');
+PROCESS.forEach(function(step, i){
+  const el = document.createElement('div');
+  el.className = 'process-card reveal';
+  el.style.transitionDelay = (i*0.08) + 's';
+  el.innerHTML = '<div class="step-num">0' + (i+1) + '</div><h3>' + step.title + '</h3><p>' + step.text + '</p>';
+  processGrid.appendChild(el);
+  revealObserver.observe(el);
+});
+
+const MEDIA = [
+  { type: "image", src: "assets/photo1.jpg", title: "Add a screenshot", sub: "Gameplay or UI capture" },
+  { type: "video", src: "assets/clip1.mp4", title: "Add a short clip", sub: "10-30s gameplay preview" },
+  { type: "image", src: "assets/photo2.jpg", title: "Add a screenshot", sub: "Systems or level design" },
+  { type: "video", src: "assets/clip2.mp4", title: "Add a short clip", sub: "Feature showcase" },
+  { type: "image", src: "assets/photo3.jpg", title: "Add a screenshot", sub: "Combat or ability system" },
+  { type: "video", src: "assets/clip3.mp4", title: "Add a short clip", sub: "UI or menu walkthrough" }
+];
+const mediaTrack = document.getElementById('mediaTrack');
+function renderMediaCard(m){
+  const card = document.createElement('div');
+  card.className = 'media-card';
+  const visual = m.type === 'video'
+    ? '<video src="' + m.src + '" muted loop playsinline autoplay onerror="this.style.display=\'none\'; this.parentElement.querySelector(\'.fallback\').style.display=\'flex\';"></video><div class="fallback" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;">Add video: ' + m.src + '</div>'
+    : '<img src="' + m.src + '" onerror="this.style.display=\'none\'; this.parentElement.querySelector(\'.fallback\').style.display=\'flex\';"><div class="fallback" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;">Add photo: ' + m.src + '</div>';
+  card.innerHTML = '<div class="media-visual">' + visual + '</div><div class="media-caption"><div class="m-title">' + m.title + '</div><div class="m-sub">' + m.sub + '</div></div>';
+  return card;
+}
+for(let r=0;r<2;r++){
+  MEDIA.forEach(function(m){ mediaTrack.appendChild(renderMediaCard(m)); });
+}
+
+document.getElementById('copyDiscord').addEventListener('click', function(){
+  navigator.clipboard.writeText('1479437155691397315').then(function(){
+    const btn = document.getElementById('copyDiscord');
+    const original = btn.textContent;
+    btn.textContent = 'Copied';
+    setTimeout(function(){ btn.textContent = original; }, 1500);
+  });
+});
+</script>
+
+</body>
+</html>
